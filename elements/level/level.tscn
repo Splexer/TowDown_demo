@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://bj67aig0wbgir"]
+
+[ext_resource type="Script" uid="uid://cu7qchltcpgd0" path="res://elements/level/level.gd" id="1_qskc3"]
+[ext_resource type="Texture2D" uid="uid://bn7ckeqscpa2p" path="res://assets/player/Dude_Monster_Death_8.png" id="2_rghkb"]
+[ext_resource type="PackedScene" uid="uid://dkiphuhu317h0" path="res://elements/player/player.tscn" id="3_sqcjf"]
+
+[sub_resource type="TileSet" id="TileSet_ew48i"]
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_qskc3")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_ew48i")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(164, 143)
+scale = Vector2(2.28125, 9.9375)
+texture = ExtResource("2_rghkb")
+
+[node name="Player" parent="." instance=ExtResource("3_sqcjf")]

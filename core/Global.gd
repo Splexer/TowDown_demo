@@ -1,11 +1,5 @@
 extends Node
 
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+var player_speed : float = 100.0
+var player_sprint_speed : float = 220.0
+var player_hp : int = 1
