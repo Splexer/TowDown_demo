@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://csj7pci0ao7ob"
-path="res://.godot/imported/Dude_Monster_Jump_8.png-683a6e8ac700433d4e6df13538cce194.ctex"
+uid="uid://cph580kvxd2kq"
+path="res://.godot/imported/TileSet_Demo.png-9cfde7add791282174bbd736319b3660.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/Dude_Monster_Jump_8.png"
-dest_files=["res://.godot/imported/Dude_Monster_Jump_8.png-683a6e8ac700433d4e6df13538cce194.ctex"]
+source_file="res://assets/tileset/TileSet_Demo.png"
+dest_files=["res://.godot/imported/TileSet_Demo.png-9cfde7add791282174bbd736319b3660.ctex"]
 
 [params]
 

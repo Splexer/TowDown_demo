@@ -5,7 +5,7 @@ class_name Player
 #config vars
 var sprint_speed : float = 220.0
 var walk_speed : float = 100.0
-var hp : int = 10
+var hp : int = 2
 
 var is_active : bool = true
 var is_jumping : bool = false
@@ -14,24 +14,23 @@ var _tween : Tween
 
 @onready var sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
+@onready var shadow : Sprite2D = $shadow
 
 func _ready() -> void:
 	speed = Global.player_speed
 	sprint_speed = Global.player_sprint_speed
 	#hp = Global.player_hp
-	pass
 
-func _unhandled_input(event: InputEvent) -> void:
-	if Input.is_action_just_pressed("debug_key1"):
-		take_damage(1)
-		print("now hp = ", hp)
+#func _unhandled_input(event: InputEvent) -> void:
+	#if Input.is_action_just_pressed("debug_key1"):
+		#take_damage(1)
 
 func _physics_process(_delta):
 	if !is_active: return
 	if Input.is_action_just_pressed("jump"):
 		_jump()
 	#вектор направления, через 2 функции axis, -1.0, 1.0, в каждой	
-	var direction := Vector2(Input.get_axis("move_left", "move_right"), Input.get_axis("move_up", "move_down"))
+	var direction:Vector2 = Vector2(Input.get_axis("move_left", "move_right"), Input.get_axis("move_up", "move_down"))
 	#поворачивает персонажа, в зависимости от значения x
 	sprite.flip_h = direction.x < 0 
 	if direction:
@@ -54,18 +53,21 @@ func _jump()-> void:
 	is_jumping = true
 	collider.set_deferred("disabled", true)
 	var tween = get_tween()
-	tween.tween_property(sprite, "position", Vector2(0, -40), 0.3 )
+	tween.tween_property(sprite, "position", Vector2(0, -40), 0.2)
 	await tween.finished
 	tween = get_tween()
-	tween.tween_property(sprite, "position", Vector2(0, 0), 0.3)
+	tween.tween_property(sprite, "position", Vector2(0, 0), 0.2)
 	await tween.finished
 	collider.set_deferred("disabled", false)
 	sprite.play("idle")
 	is_jumping = false
 
 func take_damage(value: int)-> void:
+	is_active = false
 	sprite.play("hurt")
+	await sprite.animation_finished
 	hp -= value
+	is_active = true
 	if hp <= 0:
 		die()
 
@@ -73,7 +75,14 @@ func die()-> void:
 	is_active = false
 	sprite.play("die")
 	await sprite.animation_finished
-	Events.player_died.emit()
+	shadow.hide()
+	await get_tree().create_timer(0.5).timeout
+	sprite.play_backwards("die")
+	await sprite.animation_finished
+	shadow.show()
+	hp = 2
+	is_active = true
+	#Events.player_died.emit()
 
 func get_tween()-> Tween:
 	#чтобы каждый раз не создавать новый tween
