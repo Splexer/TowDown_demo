@@ -20,6 +20,12 @@ config/icon="res://icon.svg"
 Events="*res://core/Events.gd"
 Global="*res://core/Global.gd"
 
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=480
+window/size/always_on_top=true
+
 [file_customization]
 
 folder_colors={
@@ -27,6 +33,10 @@ folder_colors={
 "res://assets/": "red",
 "res://elements/": "orange"
 }
+
+[global_group]
+
+NPC=""
 
 [input]
 

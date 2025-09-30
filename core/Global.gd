@@ -1,7 +1,7 @@
 extends Node
 
-var player_speed : float = 100.0
-var player_sprint_speed : float = 220.0
+var player_walk_speed : float = 60.0
+var player_sprint_speed : float = 120.0
 var player_hp : int = 1
 
 var rng := RandomNumberGenerator.new()

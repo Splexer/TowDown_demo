@@ -2,22 +2,34 @@ extends Node2D
 
 var floor_tiles : Array[Vector2i] = [Vector2i(0,0), Vector2i(1,0),
 Vector2i(2,0),Vector2i(0,1),Vector2i(1,1),Vector2i(2,1)]
+
 var wall_tiles : Array[Vector2i] = [Vector2i(0,3), Vector2i(0,2)]
 var water_tile : Vector2i = Vector2i(3,0)
 var vase_tile : Vector2i = Vector2i(1,2)
 
+var astar : AStarGrid2D
+
 @onready var Define_Layer : TileMapLayer = $Define_Layer
 @onready var ObjectLayer : TileMapLayer = $ObjectLayer
+@onready var player : Player = $Player
 @onready var camera : Camera2D = $Player/Camera2D
 
 func _ready() -> void:
+	astar = AStarGrid2D.new()
+	astar.cell_size = Vector2(16, 16)
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+	astar.region = Define_Layer.get_used_rect()
+	astar.update()
 	_generate_map()
 	Define_Layer.hide()
 	_get_borders_position()
+	_init_NPCs()
 
-#func _unhandled_input(event: InputEvent) -> void:
-	#if Input.is_action_just_pressed("debug_key1"):
-		#_generate_map()
+func _init_NPCs()-> void:
+	for i in get_tree().get_nodes_in_group("NPC"):
+		i.setup(astar, ObjectLayer, player)
 
 func _generate_map()-> void:
 	var noise = FastNoiseLite.new()
@@ -34,10 +46,12 @@ func _generate_map()-> void:
 						ObjectLayer.set_cell(tile_position, 0, water_tile)
 					"wall":	
 						ObjectLayer.set_cell(tile_position, 0, wall_tiles.pick_random())
+						astar.set_point_solid(tile_position, true)
 					"floor":	
 						ObjectLayer.set_cell(tile_position, 0, floor_tiles.pick_random())
 					"object":
 						ObjectLayer.set_cell(tile_position, 0, vase_tile)
+						astar.set_point_solid(tile_position, true)
 					_:
 						_define_tile(noise.get_noise_2d(x, y), tile_position)
 		
@@ -48,8 +62,10 @@ func _define_tile(value: float, tile_position: Vector2i)-> void:
 		ObjectLayer.set_cell(tile_position, 0, floor_tiles.pick_random())
 	elif value < 0.4:
 		ObjectLayer.set_cell(tile_position, 0, vase_tile)
+		astar.set_point_solid(tile_position, true)
 	else:
 		ObjectLayer.set_cell(tile_position, 0, wall_tiles.pick_random())
+		astar.set_point_solid(tile_position, true)
 
 func _get_borders_position()-> void:
 	var rect : Rect2i = Define_Layer.get_used_rect()
@@ -57,3 +73,7 @@ func _get_borders_position()-> void:
 	camera.limit_top = rect.position.y * 16
 	camera.limit_right = (rect.position.x + rect.size.x) * 16
 	camera.limit_bottom = (rect.position.y + rect.size.y) * 16
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+	player.global_position = Vector2(580, 340)

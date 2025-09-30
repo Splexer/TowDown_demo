@@ -8,6 +8,7 @@ var walk_speed : float = 100.0
 var hp : int = 2
 
 var is_active : bool = true
+var immunity : bool = false
 var is_jumping : bool = false
 var speed : float = 120.0
 var _tween : Tween
@@ -17,13 +18,9 @@ var _tween : Tween
 @onready var shadow : Sprite2D = $shadow
 
 func _ready() -> void:
-	speed = Global.player_speed
+	walk_speed = Global.player_walk_speed
 	sprint_speed = Global.player_sprint_speed
 	#hp = Global.player_hp
-
-#func _unhandled_input(event: InputEvent) -> void:
-	#if Input.is_action_just_pressed("debug_key1"):
-		#take_damage(1)
 
 func _physics_process(_delta):
 	if !is_active: return
@@ -63,13 +60,18 @@ func _jump()-> void:
 	is_jumping = false
 
 func take_damage(value: int)-> void:
+	if immunity == true or hp <= 0: return
+	immunity = true
 	is_active = false
 	sprite.play("hurt")
 	await sprite.animation_finished
 	hp -= value
+	print("player take damage")
 	is_active = true
 	if hp <= 0:
 		die()
+	await get_tree().create_timer(0.5).timeout	
+	immunity = false	
 
 func die()-> void:
 	is_active = false
