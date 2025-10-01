@@ -9,6 +9,9 @@ var vase_tile : Vector2i = Vector2i(1,2)
 
 var astar : AStarGrid2D
 
+var free_tiles: Array[Vector2i] = []
+
+@onready var coin_scene : PackedScene = preload("res://elements/coin/coin.tscn")
 @onready var Define_Layer : TileMapLayer = $Define_Layer
 @onready var ObjectLayer : TileMapLayer = $ObjectLayer
 @onready var player : Player = $Player
@@ -17,9 +20,9 @@ var astar : AStarGrid2D
 func _ready() -> void:
 	astar = AStarGrid2D.new()
 	astar.cell_size = Vector2(16, 16)
-	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
-	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
-	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	astar.region = Define_Layer.get_used_rect()
 	astar.update()
 	_generate_map()
@@ -44,22 +47,33 @@ func _generate_map()-> void:
 				match type_data:
 					"water":
 						ObjectLayer.set_cell(tile_position, 0, water_tile)
+						free_tiles.append(tile_position)
 					"wall":	
 						ObjectLayer.set_cell(tile_position, 0, wall_tiles.pick_random())
 						astar.set_point_solid(tile_position, true)
 					"floor":	
 						ObjectLayer.set_cell(tile_position, 0, floor_tiles.pick_random())
+						free_tiles.append(tile_position)
 					"object":
 						ObjectLayer.set_cell(tile_position, 0, vase_tile)
 						astar.set_point_solid(tile_position, true)
 					_:
 						_define_tile(noise.get_noise_2d(x, y), tile_position)
+	for i in range(Global.on_level_coins):
+		var coin: Area2D = coin_scene.instantiate()
+		var index = Global.rng.randi_range(0, free_tiles.size() - 1)
+		var tile_position : Vector2i = free_tiles[index]
+		free_tiles.erase(tile_position)
+		coin.global_position = ObjectLayer.map_to_local(tile_position)
+		add_child(coin)
 		
 func _define_tile(value: float, tile_position: Vector2i)-> void:
 	if value < -0.2:
 		ObjectLayer.set_cell(tile_position, 0, water_tile)
+		free_tiles.append(tile_position)
 	elif value < 0.3:
 		ObjectLayer.set_cell(tile_position, 0, floor_tiles.pick_random())
+		free_tiles.append(tile_position)
 	elif value < 0.4:
 		ObjectLayer.set_cell(tile_position, 0, vase_tile)
 		astar.set_point_solid(tile_position, true)

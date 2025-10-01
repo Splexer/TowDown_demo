@@ -245,6 +245,6 @@ shape = SubResource("CapsuleShape2D_h2kxm")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_yd248")
-animation = &"die"
+animation = &"idle"
 autoplay = "idle"
 offset = Vector2(1, -2)

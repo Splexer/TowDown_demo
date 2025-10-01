@@ -5,7 +5,7 @@ class_name Player
 #config vars
 var sprint_speed : float = 220.0
 var walk_speed : float = 100.0
-var hp : int = 2
+var hp : int = 4
 
 var is_active : bool = true
 var immunity : bool = false
@@ -20,7 +20,7 @@ var _tween : Tween
 func _ready() -> void:
 	walk_speed = Global.player_walk_speed
 	sprint_speed = Global.player_sprint_speed
-	#hp = Global.player_hp
+	hp = Global.player_hp
 
 func _physics_process(_delta):
 	if !is_active: return
@@ -66,6 +66,7 @@ func take_damage(value: int)-> void:
 	sprite.play("hurt")
 	await sprite.animation_finished
 	hp -= value
+	Events.player_take_damage.emit(hp)
 	print("player take damage")
 	is_active = true
 	if hp <= 0:
@@ -79,12 +80,15 @@ func die()-> void:
 	await sprite.animation_finished
 	shadow.hide()
 	await get_tree().create_timer(0.5).timeout
+	Events.player_died.emit()
+	alive()
+
+func alive()-> void:
 	sprite.play_backwards("die")
 	await sprite.animation_finished
 	shadow.show()
 	hp = 2
 	is_active = true
-	#Events.player_died.emit()
 
 func get_tween()-> Tween:
 	#чтобы каждый раз не создавать новый tween

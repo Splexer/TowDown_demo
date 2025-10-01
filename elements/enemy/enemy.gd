@@ -14,21 +14,22 @@ var player : Player
 var last_player_pos : Vector2i = Vector2i.ZERO
 var astar : AStarGrid2D
 var tilemap : TileMapLayer
-var current_tile_coord : Vector2i = Vector2i(45,20)
+var current_tile_coord : Vector2i = Vector2i.ZERO
 var current_id_path : Array[Vector2i] = []
 
 @onready var sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var damage_area : Area2D = $Damage_Area
 
-func _ready() -> void:
-	current_id_path = [Vector2i(44, 20),Vector2i(43, 20),Vector2i(42, 20),Vector2i(41, 20),Vector2i(40, 20),Vector2i(39, 20),Vector2i(38, 20),
-	Vector2i(37, 20),Vector2i(36, 20),Vector2i(35, 20),Vector2i(34, 20),Vector2i(33, 20),Vector2i(32, 20),Vector2i(31, 20),Vector2i(30, 20)]
+#func _ready() -> void:
+	#current_id_path = [Vector2i(44, 20),Vector2i(43, 20),Vector2i(42, 20),Vector2i(41, 20),Vector2i(40, 20),Vector2i(39, 20),Vector2i(38, 20),
+	#Vector2i(37, 20),Vector2i(36, 20),Vector2i(35, 20),Vector2i(34, 20),Vector2i(33, 20),Vector2i(32, 20),Vector2i(31, 20),Vector2i(30, 20)]
 func _process(delta: float) -> void:
 	match state:
 		States.WALKING:
 			move(delta)
 			if _player_in_range(visibility_range):
 				state = States.HUNTING
+				sprite.modulate = Color(1.825, 1.825, 1.825)
 				current_id_path = []
 		States.HUNTING:
 			hunt(delta)
@@ -36,7 +37,7 @@ func _process(delta: float) -> void:
 			attack()
 
 func move(delta: float)-> void:
-	if current_id_path.is_empty() == false:# and is_moving:
+	if current_id_path.is_empty() == false:
 		sprite.play("walk")
 		astar.set_point_solid(current_tile_coord, false)
 		var target_position = tilemap.map_to_local(current_id_path.front())
@@ -48,7 +49,7 @@ func move(delta: float)-> void:
 		if global_position.distance_to(target_position) < 1:
 			global_position = target_position
 			current_tile_coord = tilemap.local_to_map(global_position)
-			#astar.set_point_solid(current_tile_coord, true)
+			astar.set_point_solid(current_tile_coord, true)
 			current_id_path.pop_front()
 	else:
 		sprite.play("idle")	
@@ -56,6 +57,7 @@ func move(delta: float)-> void:
 
 func hunt(delta: float)-> void:
 	if !_player_in_range(visibility_range):
+		sprite.modulate = Color(1.0, 1.0, 1.0)
 		state = States.WALKING
 		return
 	if _player_in_range(attack_range):

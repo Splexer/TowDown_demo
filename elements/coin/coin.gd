@@ -7,7 +7,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
 		collider.set_deferred("disabled", true)
 		sprite.play("pick_up")
-		#Events.pick_up_coin.emit()
+		Events.pick_up_coin.emit()
 		await sprite.animation_finished
 		sprite.hide()
 		queue_free()
