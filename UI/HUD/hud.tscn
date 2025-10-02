@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://epbw66m7hr7x"]
+[gd_scene load_steps=11 format=3 uid="uid://epbw66m7hr7x"]
 
 [ext_resource type="Script" uid="uid://cinqx5b7s041b" path="res://UI/HUD/hud.gd" id="1_ing8j"]
 [ext_resource type="Texture2D" uid="uid://c6ey4watqc6dw" path="res://assets/textures/Item 3-1.png.png" id="2_te8l2"]
@@ -10,7 +10,15 @@
 atlas = ExtResource("3_te8l2")
 region = Rect2(3, 1, 10, 10)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dhie7"]
+bg_color = Color(0.43137255, 0.30980393, 0.22745098, 1)
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_te8l2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_radol"]
+bg_color = Color(0.93333334, 0.61960787, 0.41960785, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dhie7"]
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -95,6 +103,10 @@ anchor_right = 1.0
 offset_left = -66.0
 offset_bottom = 36.0
 grow_horizontal = 0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Coin_Bar"]
 layout_mode = 2
@@ -123,9 +135,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -75.0
-offset_top = -121.5
+offset_top = -132.0
 offset_right = 75.0
-offset_bottom = 121.5
+offset_bottom = 132.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 5
@@ -136,6 +148,7 @@ theme_override_constants/margin_bottom = 5
 [node name="Panel" type="Panel" parent="Pause_menu"]
 custom_minimum_size = Vector2(200, 250)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dhie7")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Pause_menu"]
 layout_mode = 2
@@ -180,9 +193,62 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 text = "Main menu"
 
+[node name="Confirmation_menu" type="MarginContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(250, 150)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -125.0
+offset_top = -75.0
+offset_right = 125.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="Confirmation_menu"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_radol")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Confirmation_menu"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="Confirmation_menu/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Are you sure?"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Confirmation_menu/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+theme_override_styles/separator = SubResource("StyleBoxEmpty_dhie7")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Confirmation_menu/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_constants/separation = 40
+
+[node name="Confirm_btn" type="Button" parent="Confirmation_menu/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 48)
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel_btn" type="Button" parent="Confirmation_menu/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 32)
+layout_mode = 2
+text = "Cancel"
+
 [connection signal="toggled" from="Pause/Pause_btn" to="." method="_on_pause_btn_toggled"]
 [connection signal="pressed" from="Pause_menu/VBoxContainer/Resume_btn" to="." method="_on_resume_btn_pressed"]
 [connection signal="pressed" from="Pause_menu/VBoxContainer/Restart_btn" to="." method="_on_restart_btn_pressed"]
 [connection signal="pressed" from="Pause_menu/VBoxContainer/Load_btn" to="." method="_on_load_btn_pressed"]
 [connection signal="pressed" from="Pause_menu/VBoxContainer/Save_btn" to="." method="_on_save_btn_pressed"]
 [connection signal="pressed" from="Pause_menu/VBoxContainer/Menu_btn" to="." method="_on_menu_btn_pressed"]
+[connection signal="pressed" from="Confirmation_menu/VBoxContainer/HBoxContainer/Confirm_btn" to="." method="_on_confirm_btn_pressed"]
+[connection signal="pressed" from="Confirmation_menu/VBoxContainer/HBoxContainer/Cancel_btn" to="." method="_on_cancel_btn_pressed"]

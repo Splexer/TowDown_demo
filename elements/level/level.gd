@@ -1,8 +1,9 @@
 extends Node2D
 
+class_name Level
+
 var floor_tiles : Array[Vector2i] = [Vector2i(0,0), Vector2i(1,0),
 Vector2i(2,0),Vector2i(0,1),Vector2i(1,1),Vector2i(2,1)]
-
 var wall_tiles : Array[Vector2i] = [Vector2i(0,3), Vector2i(0,2)]
 var water_tile : Vector2i = Vector2i(3,0)
 var vase_tile : Vector2i = Vector2i(1,2)
@@ -11,7 +12,7 @@ var astar : AStarGrid2D
 
 var free_tiles: Array[Vector2i] = []
 
-@onready var coin_scene : PackedScene = preload("res://elements/coin/coin.tscn")
+@onready var coin_scene : PackedScene = load("res://elements/coin/coin.tscn")
 @onready var Define_Layer : TileMapLayer = $Define_Layer
 @onready var ObjectLayer : TileMapLayer = $ObjectLayer
 @onready var player : Player = $Player
@@ -25,16 +26,15 @@ func _ready() -> void:
 	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	astar.region = Define_Layer.get_used_rect()
 	astar.update()
-	_generate_map()
-	Define_Layer.hide()
 	_get_borders_position()
 	_init_NPCs()
+	get_tree().paused = false
 
 func _init_NPCs()-> void:
 	for i in get_tree().get_nodes_in_group("NPC"):
 		i.setup(astar, ObjectLayer, player)
 
-func _generate_map()-> void:
+func generate_map()-> void:
 	var noise = FastNoiseLite.new()
 	noise.seed = Global.rng.seed
 	noise.frequency = 0.1
@@ -59,14 +59,14 @@ func _generate_map()-> void:
 						astar.set_point_solid(tile_position, true)
 					_:
 						_define_tile(noise.get_noise_2d(x, y), tile_position)
-	for i in range(Global.on_level_coins):
-		var coin: Area2D = coin_scene.instantiate()
-		var index = Global.rng.randi_range(0, free_tiles.size() - 1)
-		var tile_position : Vector2i = free_tiles[index]
-		free_tiles.erase(tile_position)
-		coin.global_position = ObjectLayer.map_to_local(tile_position)
-		add_child(coin)
-		
+	Define_Layer.hide()				
+	#for i in range(Global.on_level_coins):
+		#var coin: Area2D = coin_scene.instantiate()
+		#var index = Global.rng.randi_range(0, free_tiles.size() - 1)
+		#var tile_position : Vector2i = free_tiles[index]
+		#free_tiles.erase(tile_position)
+		#coin.global_position = ObjectLayer.map_to_local(tile_position)
+		#add_child(coin)
 func _define_tile(value: float, tile_position: Vector2i)-> void:
 	if value < -0.2:
 		ObjectLayer.set_cell(tile_position, 0, water_tile)
@@ -80,6 +80,26 @@ func _define_tile(value: float, tile_position: Vector2i)-> void:
 	else:
 		ObjectLayer.set_cell(tile_position, 0, wall_tiles.pick_random())
 		astar.set_point_solid(tile_position, true)
+
+func set_coins(amount: int = Global.on_level_coins, coords: Array = [])-> void:
+	if coords == []:
+		for i in range(amount):
+			var coin: Area2D = coin_scene.instantiate()
+			var index: int = Global.rng.randi_range(0, free_tiles.size() - 1)
+			var tile_position : Vector2i = free_tiles[index]
+			free_tiles.erase(tile_position)
+			coin.global_position = ObjectLayer.map_to_local(tile_position)
+			add_child(coin)
+	else:
+		for i in coords:
+			var coin: Area2D = coin_scene.instantiate()
+			coin.global_position = i
+			add_child(coin)
+			
+func set_enemies_position(coords : Array)-> void:
+	var enemies: Array = get_tree().get_nodes_in_group("NPC")
+	for i in enemies.size():
+		enemies[i].position = coords[i]
 
 func _get_borders_position()-> void:
 	var rect : Rect2i = Define_Layer.get_used_rect()

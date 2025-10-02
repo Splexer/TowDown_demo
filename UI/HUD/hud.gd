@@ -1,5 +1,8 @@
 extends CanvasLayer
 
+signal confirmed
+var confirm : bool = false
+
 @onready var coin_collected : Label = $Coin_Bar/HBoxContainer/coin_collected_label
 @onready var coin_requeired : Label = $Coin_Bar/HBoxContainer/coin_requeired_label
 @onready var heart_cointainer : HBoxContainer = $HP_Bar/HBoxContainer
@@ -12,10 +15,17 @@ extends CanvasLayer
 @onready var save_btn : Button = $Pause_menu/VBoxContainer/Save_btn
 @onready var menu_btn : Button = $Pause_menu/VBoxContainer/Menu_btn
 @onready var pause_btn : TextureButton = $Pause/Pause_btn
+@onready var confirmation_menu : MarginContainer = $Confirmation_menu
+@onready var confirm_btn : Button = $Confirmation_menu/VBoxContainer/HBoxContainer/Confirm_btn
+@onready var cancel_btn : Button = $Confirmation_menu/VBoxContainer/HBoxContainer/Cancel_btn
+@onready var confirmation_title : Label = $Confirmation_menu/VBoxContainer/Label
 
 func _ready() -> void:
+	Events.bad_save_file.connect(_bad_save_handler)
 	Events.player_take_damage.connect(_update_hp_bar)
 	Events.pick_up_coin.connect(_update_collected_coins)
+	Events.win.connect(_show_win_menu)
+	Events.lose.connect(_show_lose_menu)
 	_update()
 
 #Одно меню, используется в разных ситуациях. Функция для каждого варианта	
@@ -63,10 +73,44 @@ func _on_resume_btn_pressed() -> void:
 	_hide_pause_menu()
 	pause_btn.button_pressed = false
 func _on_restart_btn_pressed() -> void:
-	pass # Replace with function body.
+	_show_confirmation_menu()
+	await confirmed
+	if confirm:
+		confirm = false
+		get_tree().paused = false
+		Events.load_new_level.emit()
+	else:
+		confirmation_menu.hide()
 func _on_load_btn_pressed() -> void:
-	pass # Replace with function body.
+	Events.load_save_level.emit()
 func _on_save_btn_pressed() -> void:
-	pass # Replace with function body.
+	Events.save_level.emit()
 func _on_menu_btn_pressed() -> void:
-	pass # Replace with function body.
+	_show_confirmation_menu()
+	await confirmed
+	if confirm:
+		confirm = false
+		_hide_pause_menu()
+		Events.load_Main_menu.emit()
+	else:
+		confirmation_menu.hide()
+
+
+func _on_cancel_btn_pressed() -> void:
+	confirm = false
+	confirmed.emit()
+func _on_confirm_btn_pressed() -> void:
+	confirm = true
+	confirmed.emit()
+func _show_confirmation_menu() -> void:
+	cancel_btn.show()
+	confirm_btn.show()
+	confirmation_title.text = "Are you sure?"
+	confirmation_menu.show()
+func _bad_save_handler()-> void:
+	cancel_btn.hide()
+	confirm_btn.hide()
+	confirmation_title.text = "You dont have a save"
+	confirmation_menu.show()
+	await get_tree().create_timer(1.5).timeout
+	confirmation_menu.hide()

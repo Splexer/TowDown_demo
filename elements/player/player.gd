@@ -80,8 +80,8 @@ func die()-> void:
 	await sprite.animation_finished
 	shadow.hide()
 	await get_tree().create_timer(0.5).timeout
-	Events.player_died.emit()
-	alive()
+	Events.lose.emit()
+	#alive()
 
 func alive()-> void:
 	sprite.play_backwards("die")
