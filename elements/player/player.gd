@@ -8,16 +8,17 @@ var sprint_speed : float = 120.0
 var walk_speed : float = 60.0
 var hp : int = 4
 
-var is_active : bool = true
-var immunity : bool = false
-var is_jumping : bool = false
+var is_active : bool = true #Можно ли управлять
+var immunity : bool = false #Можно ли получать урон
+var is_jumping : bool = false #Мы в прыжке?
 var speed : float = walk_speed
-var _tween : Tween
+var _tween : Tween 
 
 @onready var sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
 @onready var shadow : Sprite2D = $shadow
 
+#Читаем конфиг. Потом ещё всем кому нужно сообщаем наше актуальное HP.
 func _ready() -> void:
 	var cfg : ConfigFile = ConfigFile.new()
 	var err := cfg.load("res://core/config.ini") 
@@ -25,8 +26,9 @@ func _ready() -> void:
 		walk_speed = cfg.get_value("player", "walk_speed", 60.0)
 		sprint_speed = cfg.get_value("player", "sprint_speed", 120.0)
 		hp = cfg.get_value("player", "hp", 4)
-	Events.notify_about_player_hp.emit(hp)
-	
+	Events.hud_hp_update.emit(hp)
+
+#Управление
 func _physics_process(_delta):
 	if !is_active: return
 	if Input.is_action_just_pressed("jump"):
@@ -48,7 +50,8 @@ func _physics_process(_delta):
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.y = move_toward(velocity.y, 0, speed)
 	move_and_slide()
-	
+
+#Прыжок - это отключение коллайдера и смещение спрайта. И обратно на свои места
 func _jump()-> void:
 	#прыжок по сути, отключение коллизии и смещение спрайта
 	if is_jumping: return
@@ -64,6 +67,8 @@ func _jump()-> void:
 	sprite.play("idle")
 	is_jumping = false
 
+#Получение урона. С небольшим Delay, чтобы не умереть с 1 касания
+#Также пара ограничений, чтобы не били после смерти, анимация до конца и т.п.
 func take_damage(value: int)-> void:
 	if immunity == true or hp <= 0: return
 	immunity = true
@@ -71,13 +76,14 @@ func take_damage(value: int)-> void:
 	sprite.play("hurt")
 	await sprite.animation_finished
 	hp -= value
-	Events.notify_about_player_hp.emit(hp)
+	Events.hud_hp_update.emit(hp)
 	is_active = true
 	if hp <= 0:
 		die()
 	await get_tree().create_timer(0.5).timeout	
 	immunity = false
 
+#Смерть :(
 func die()-> void:
 	is_active = false
 	sprite.play("die")
@@ -87,6 +93,7 @@ func die()-> void:
 	Events.lose.emit()
 	#alive()
 
+#Жизнь :) В проекте не используется, но выглядит прикольно
 func alive()-> void:
 	sprite.play_backwards("die")
 	await sprite.animation_finished
@@ -94,8 +101,8 @@ func alive()-> void:
 	hp = 2
 	is_active = true
 
+#чтобы каждый раз не создавать новый tween, но при этом удалять старый
 func get_tween()-> Tween:
-	#чтобы каждый раз не создавать новый tween
 	if (_tween):
 		_tween.kill()
 	_tween = create_tween().set_ease(Tween.EASE_OUT)

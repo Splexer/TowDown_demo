@@ -71,10 +71,9 @@ func _load_new_level()-> void:
 	level.set_coins(on_level_coins)
 	
 func _load_save_level()-> void:
-	print("Начиная загружать игру")
 	if !FileAccess.file_exists(save_path + save_file_name):
 		Events.bad_save_file.emit()
-		print("не удалось загрузить игру :(((")
+		print("не удалось загрузить игру")
 		return
 	var file = FileAccess.open(save_path + save_file_name, FileAccess.READ)
 	save_data = file.get_var()
@@ -89,7 +88,8 @@ func _load_save_level()-> void:
 	level.generate_map()
 	level.set_coins(save_data["uncollected_coins_position"].size(), save_data["uncollected_coins_position"])
 	level.set_enemies_position(save_data["enemies_position"])
-	print("успешно загрузил сохранение")
+	Events.hud_coins_update.emit()
+	print("Сохранение успешно загружено")
 
 func _load_Main_menu()-> void:
 	get_tree().change_scene_to_packed(main_menu_scene)
@@ -97,5 +97,6 @@ func _load_Main_menu()-> void:
 
 func _pick_up_coin()-> void:
 	collected_coins += 1
+	Events.hud_coins_update.emit()
 	if collected_coins >= required_coins:
 		Events.win.emit()

@@ -1,17 +1,213 @@
-[gd_scene load_steps=3 format=3 uid="uid://sgabfnowue82"]
+[gd_scene load_steps=32 format=3 uid="uid://sgabfnowue82"]
 
 [ext_resource type="Script" uid="uid://cipsss5vwlmef" path="res://UI/Main_menu/main_menu.gd" id="1_j2pfe"]
+[ext_resource type="Texture2D" uid="uid://bmdo6od58np5d" path="res://assets/textures/Start_screen.png" id="2_i6ust"]
+[ext_resource type="Texture2D" uid="uid://cerkltbfyhceg" path="res://assets/textures/burning_loop_2.png" id="3_8nefd"]
+[ext_resource type="Texture2D" uid="uid://dk78kb40qhv4w" path="res://assets/textures/Red Slime Spritesheet.png" id="4_2oka0"]
+[ext_resource type="Texture2D" uid="uid://dotdm41w23hhv" path="res://assets/textures/Coin Sheet.png" id="5_v261e"]
+[ext_resource type="Texture2D" uid="uid://d35c4kqacoj3b" path="res://assets/player/Dude_Monster_Idle_4.png" id="6_ligrk"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j2pfe"]
+bg_color = Color(0.49411765, 0.30980393, 0.13725491, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1flmm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hpx4d"]
 bg_color = Color(0.15487596, 0.154876, 0.15487587, 1)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_51rp4"]
+atlas = ExtResource("3_8nefd")
+region = Rect2(140, 0, 20, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_c0sy3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_51rp4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b41h4"]
+atlas = ExtResource("4_2oka0")
+region = Rect2(48, 0, 16, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2x1sl"]
+atlas = ExtResource("4_2oka0")
+region = Rect2(64, 0, 16, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_36k4g"]
+atlas = ExtResource("4_2oka0")
+region = Rect2(80, 0, 16, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c0sy3"]
+atlas = ExtResource("4_2oka0")
+region = Rect2(96, 0, 16, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u3jjh"]
+atlas = ExtResource("4_2oka0")
+region = Rect2(112, 0, 16, 18)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bk486"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b41h4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2x1sl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_36k4g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c0sy3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u3jjh")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_etnyy"]
+atlas = ExtResource("5_v261e")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cwa4y"]
+atlas = ExtResource("5_v261e")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rb47s"]
+atlas = ExtResource("5_v261e")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lfvg3"]
+atlas = ExtResource("5_v261e")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x4yot"]
+atlas = ExtResource("5_v261e")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c7won"]
+atlas = ExtResource("5_v261e")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6kq1u"]
+atlas = ExtResource("5_v261e")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c3qhj"]
+atlas = ExtResource("5_v261e")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7c8m8"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_etnyy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cwa4y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rb47s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lfvg3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x4yot")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c7won")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6kq1u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c3qhj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1yk65"]
+atlas = ExtResource("6_ligrk")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v8j58"]
+atlas = ExtResource("6_ligrk")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_isywk"]
+atlas = ExtResource("6_ligrk")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_31a1r"]
+atlas = ExtResource("6_ligrk")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_a7dqp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1yk65")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v8j58")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_isywk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_31a1r")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
+
 [node name="Main_menu" type="CanvasLayer"]
 script = ExtResource("1_j2pfe")
 
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 396.0
+offset_bottom = 297.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("2_i6ust")
+
 [node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 13
-anchor_left = 0.5
-anchor_right = 0.5
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 314.0
+grow_vertical = 2
+size_flags_horizontal = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Panel" type="Panel" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_j2pfe")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -20,49 +216,36 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/Panel/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 20
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Demo  - TopDown"
+horizontal_alignment = 1
 
-[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Panel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -46.5
-offset_top = -20.0
-offset_right = 46.5
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_constants/separation = 20
+theme_override_styles/separator = SubResource("StyleBoxEmpty_1flmm")
 
-[node name="New_game_btn" type="Button" parent="MarginContainer/VBoxContainer/Panel/VBoxContainer"]
+[node name="New_game_btn" type="Button" parent="MarginContainer/Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 text = "New game"
 
-[node name="Load_game_btn" type="Button" parent="MarginContainer/VBoxContainer/Panel/VBoxContainer"]
+[node name="Load_game_btn" type="Button" parent="MarginContainer/Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 text = "Load game"
 
-[node name="Exit_btn" type="Button" parent="MarginContainer/VBoxContainer/Panel/VBoxContainer"]
+[node name="Exit_btn" type="Button" parent="MarginContainer/Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -120,10 +303,35 @@ text = "You don't have a save"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Confirmation_menu" type="MarginContainer" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Fire_sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(471, 191)
+scale = Vector2(3, 3)
+sprite_frames = SubResource("SpriteFrames_c0sy3")
+autoplay = "default"
+frame_progress = 0.5177214
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Panel/VBoxContainer/New_game_btn" to="." method="_on_new_game_btn_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Panel/VBoxContainer/Load_game_btn" to="." method="_on_load_game_btn_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Panel/VBoxContainer/Exit_btn" to="." method="_on_exit_btn_pressed"]
+[node name="Slime_sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(568, 149)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_bk486")
+autoplay = "default"
+frame_progress = 0.2993203
+flip_h = true
+
+[node name="Coin_sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(569, 69)
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_7c8m8")
+autoplay = "default"
+frame_progress = 0.5941416
+
+[node name="Person_sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(400.00003, 179)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_a7dqp")
+autoplay = "default"
+frame_progress = 0.6672681
+
+[connection signal="pressed" from="MarginContainer/Panel/MarginContainer/VBoxContainer/New_game_btn" to="." method="_on_new_game_btn_pressed"]
+[connection signal="pressed" from="MarginContainer/Panel/MarginContainer/VBoxContainer/Load_game_btn" to="." method="_on_load_game_btn_pressed"]
+[connection signal="pressed" from="MarginContainer/Panel/MarginContainer/VBoxContainer/Exit_btn" to="." method="_on_exit_btn_pressed"]

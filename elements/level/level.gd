@@ -2,22 +2,29 @@ extends Node2D
 
 class_name Level
 
+#Это координаты тайлов в атласе, чтобы можно было их удобно указать при установке
 var floor_tiles : Array[Vector2i] = [Vector2i(0,0), Vector2i(1,0),
 Vector2i(2,0),Vector2i(0,1),Vector2i(1,1),Vector2i(2,1)]
 var wall_tiles : Array[Vector2i] = [Vector2i(0,3), Vector2i(0,2)]
 var water_tile : Vector2i = Vector2i(3,0)
 var vase_tile : Vector2i = Vector2i(1,2)
 
+#Алгоритм поиска оптимального пути AStar. Позволит обходить препятствия на карте
 var astar : AStarGrid2D
 
+#Свободные тайлы, где можно было бы потом разместить монетки
 var free_tiles: Array[Vector2i] = []
 
 @onready var coin_scene : PackedScene = load("res://elements/coin/coin.tscn")
+#Задающий слой
 @onready var Define_Layer : TileMapLayer = $Define_Layer
+#Основной, по которому будем бегать
 @onready var ObjectLayer : TileMapLayer = $ObjectLayer
 @onready var player : Player = $Player
 @onready var camera : Camera2D = $Player/Camera2D
+@onready var HUD : CanvasLayer = $HUD
 
+#Устанавлиаем настройки Astar и делаем базовую инициализацию
 func _ready() -> void:
 	astar = AStarGrid2D.new()
 	astar.cell_size = Vector2(16, 16)
@@ -30,10 +37,16 @@ func _ready() -> void:
 	_init_NPCs()
 	get_tree().paused = false
 
+#Чтобы не создавать каждому по Astar и знать карту и кто такой игрок
 func _init_NPCs()-> void:
 	for i in get_tree().get_nodes_in_group("NPC"):
 		i.setup(astar, ObjectLayer, player)
 
+#Генерация карты. Сначала размер карты и тайлы определяются через Define_layer
+#Это позволяет не только задавать размер, но и создавать структуры. 
+#Структуры будут в том месте и в том виде как их нарисовали.
+#При этом остальная карта остаётся случайной, не конфликтуя с структурами
+#Затем через FastNoise и seed генерируется шум. И по нему уже далее ставятся случайные тайлы.
 func generate_map()-> void:
 	var noise = FastNoiseLite.new()
 	noise.seed = Global.rng.seed
@@ -59,14 +72,9 @@ func generate_map()-> void:
 						astar.set_point_solid(tile_position, true)
 					_:
 						_define_tile(noise.get_noise_2d(x, y), tile_position)
-	Define_Layer.hide()				
-	#for i in range(Global.on_level_coins):
-		#var coin: Area2D = coin_scene.instantiate()
-		#var index = Global.rng.randi_range(0, free_tiles.size() - 1)
-		#var tile_position : Vector2i = free_tiles[index]
-		#free_tiles.erase(tile_position)
-		#coin.global_position = ObjectLayer.map_to_local(tile_position)
-		#add_child(coin)
+	Define_Layer.hide()
+	
+#Рисуем все оставшиеся случайные тайлы через значения шума, по высоте.	
 func _define_tile(value: float, tile_position: Vector2i)-> void:
 	if value < -0.2:
 		ObjectLayer.set_cell(tile_position, 0, water_tile)
@@ -81,8 +89,14 @@ func _define_tile(value: float, tile_position: Vector2i)-> void:
 		ObjectLayer.set_cell(tile_position, 0, wall_tiles.pick_random())
 		astar.set_point_solid(tile_position, true)
 
+#Позволяет разместить монеты. Размещать их можно только в свободных местах
+#Поэтому в функции генерации мы все "свободные" тайлы пишем в массив
+#Если у нас есть сохранение, мы можем сказать ей координаты каждой монетки
+#Если нет, то она просто расставит случайно столько монет, сколько нам нужно
+#Главное чтобы места хватило. Ибо здесь нет обработки такой ситуации.
 func set_coins(amount: int = Global.on_level_coins, coords: Array = [])-> void:
 	if coords == []:
+		print("sus1")
 		for i in range(amount):
 			var coin: Area2D = coin_scene.instantiate()
 			var index: int = Global.rng.randi_range(0, free_tiles.size() - 1)
@@ -91,16 +105,19 @@ func set_coins(amount: int = Global.on_level_coins, coords: Array = [])-> void:
 			coin.global_position = ObjectLayer.map_to_local(tile_position)
 			add_child(coin)
 	else:
+		print("sus")
 		for i in coords:
 			var coin: Area2D = coin_scene.instantiate()
 			coin.global_position = i
 			add_child(coin)
 			
+#Если у нас есть сохранение, то мы можем вызвать эту функцию и расставить врагов
 func set_enemies_position(coords : Array)-> void:
 	var enemies: Array = get_tree().get_nodes_in_group("NPC")
 	for i in enemies.size():
 		enemies[i].position = coords[i]
-
+		
+#Чтобы наш игрок не видел "закулисье" надо поставить границы камеры по границам уровня
 func _get_borders_position()-> void:
 	var rect : Rect2i = Define_Layer.get_used_rect()
 	camera.limit_left = rect.position.x * 16
@@ -108,6 +125,8 @@ func _get_borders_position()-> void:
 	camera.limit_right = (rect.position.x + rect.size.x) * 16
 	camera.limit_bottom = (rect.position.y + rect.size.y) * 16
 
-
+#Стены для игрока не особая помеха(Это легко поменять, но ьеь)
+#Поэтому, эта функция вернёт его на центр уровня, когда он выпрыгнет за пределы экрана
 func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 	player.global_position = Vector2(580, 340)
+	#Надо бы конкретное число поменять на координаты узла Marker, который надо создать
