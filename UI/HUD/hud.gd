@@ -21,9 +21,9 @@ var confirm : bool = false
 @onready var confirmation_title : Label = $Confirmation_menu/VBoxContainer/Label
 
 func _ready() -> void:
+	Events.hud_hp_update.connect(_update_hp_bar)
 	Events.save_succes.connect(_succes_saving_handler)
 	Events.bad_save_file.connect(_bad_save_handler)
-	Events.hud_hp_update.connect(_update_hp_bar)
 	Events.hud_coins_update.connect(_update_collected_coins)
 	Events.win.connect(_show_win_menu)
 	Events.lose.connect(_show_lose_menu)

@@ -32,7 +32,7 @@ func _ready() -> void:
 		attack_damage = cfg.get_value("NPC", "attack_damage", 1)
 
 #Поведение в зависимости от состояния
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	match state:
 		States.WALKING:
 			if _player_in_range(visibility_range):
