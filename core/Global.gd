@@ -1,5 +1,7 @@
 extends Node
 
+var config_file : ConfigFile = ConfigFile.new()
+
 var save_path = "user://"
 var save_file_name = "test_build_save.res"
 var save_data: Dictionary = {
@@ -13,10 +15,7 @@ var save_data: Dictionary = {
 
 var level_scene : PackedScene = preload("res://elements/level/level.tscn")
 var main_menu_scene : PackedScene = preload("res://UI/Main_menu/main_menu.tscn")
-		
-var player_walk_speed : float = 60.0
-var player_sprint_speed : float = 120.0
-var player_hp : int = 4
+
 
 var on_level_coins : int = 20
 var collected_coins : int = 0
@@ -26,6 +25,11 @@ var required_coins : int = 10
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
+	var cfg : ConfigFile = ConfigFile.new()
+	var err := cfg.load("res://core/config.ini") 
+	if err == OK:
+		required_coins = cfg.get_value("Global", "required_coins", 15)
+		on_level_coins = cfg.get_value("Global", "on_level_coins", 25)
 	Events.load_Main_menu.connect(_load_Main_menu)
 	Events.save_level.connect(_save_level)
 	Events.load_save_level.connect(_load_save_level)
@@ -33,18 +37,17 @@ func _ready() -> void:
 	Events.pick_up_coin.connect(_pick_up_coin)
 	rng.randomize()
 	seed(rng.seed)
-	print("seed = ", rng.seed)
+	print_debug("seed = ", rng.seed)
 
 func _save_level()-> void:
 	var level : Level = get_tree().current_scene
 	if level.player.hp < 1:
-		push_warning("hp < 1 can't save now")
+		print("hp < 1 can't save now")
 		return 
 	save_data["player_hp"] = level.player.hp
 	save_data["seed"] = rng.seed
 	save_data["player_position"] = level.player.position
 	save_data["collected_coins"] = collected_coins
-	#save_data["uncollected_coins_position"]
 	var uncollected_coins:Array = get_tree().get_nodes_in_group("Coin")
 	save_data["uncollected_coins_position"] = []
 	save_data["enemies_position"] = []
@@ -56,7 +59,8 @@ func _save_level()-> void:
 	var file = FileAccess.open(save_path + save_file_name, FileAccess.WRITE)	
 	file.store_var(save_data.duplicate())
 	file.close()
-	print("Игра сохранена")	
+	Events.save_succes.emit()
+	print_debug("Игра сохранена")	
 
 func _load_new_level()-> void:
 	get_tree().change_scene_to_packed(level_scene)

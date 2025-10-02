@@ -21,9 +21,9 @@ var free_tiles: Array[Vector2i] = []
 func _ready() -> void:
 	astar = AStarGrid2D.new()
 	astar.cell_size = Vector2(16, 16)
-	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
-	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ALWAYS
+	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_CHEBYSHEV
+	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_CHEBYSHEV
 	astar.region = Define_Layer.get_used_rect()
 	astar.update()
 	_get_borders_position()

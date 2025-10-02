@@ -22,11 +22,11 @@ var confirm : bool = false
 
 func _ready() -> void:
 	Events.bad_save_file.connect(_bad_save_handler)
-	Events.player_take_damage.connect(_update_hp_bar)
+	Events.notify_about_player_hp.connect(_update_hp_bar)
 	Events.pick_up_coin.connect(_update_collected_coins)
 	Events.win.connect(_show_win_menu)
 	Events.lose.connect(_show_lose_menu)
-	_update()
+	_update_collected_coins()
 
 #Одно меню, используется в разных ситуациях. Функция для каждого варианта	
 func _show_win_menu()-> void:
@@ -52,11 +52,8 @@ func _hide_pause_menu()-> void:
 	pause_menu.hide()
 	get_tree().paused = false
 	
-func _update(hp : int = Global.player_hp)-> void:
-	coin_requeired.text = "/ " + str(Global.required_coins)
-	_update_collected_coins()
-	_update_hp_bar(hp)
 func _update_collected_coins()-> void:
+	coin_requeired.text = "/ " + str(Global.required_coins)
 	coin_collected.text = str(Global.collected_coins)
 func _update_hp_bar(hp: int)-> void:
 	for i in heart_cointainer.get_child_count():
@@ -114,3 +111,11 @@ func _bad_save_handler()-> void:
 	confirmation_menu.show()
 	await get_tree().create_timer(1.5).timeout
 	confirmation_menu.hide()
+func _succes_saving_handler()-> void:
+	cancel_btn.hide()
+	confirm_btn.hide()
+	confirmation_title.text = "Game saved successfully"
+	confirmation_menu.show()
+	await get_tree().create_timer(1.5).timeout
+	confirmation_menu.hide()
+	

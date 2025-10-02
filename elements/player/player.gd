@@ -2,15 +2,16 @@ extends CharacterBody2D
 
 class_name Player
 
+var player_cfg : ConfigFile = ConfigFile.new()
 #config vars
-var sprint_speed : float = 220.0
-var walk_speed : float = 100.0
+var sprint_speed : float = 120.0
+var walk_speed : float = 60.0
 var hp : int = 4
 
 var is_active : bool = true
 var immunity : bool = false
 var is_jumping : bool = false
-var speed : float = 120.0
+var speed : float = walk_speed
 var _tween : Tween
 
 @onready var sprite : AnimatedSprite2D = $AnimatedSprite2D
@@ -18,10 +19,14 @@ var _tween : Tween
 @onready var shadow : Sprite2D = $shadow
 
 func _ready() -> void:
-	walk_speed = Global.player_walk_speed
-	sprint_speed = Global.player_sprint_speed
-	hp = Global.player_hp
-
+	var cfg : ConfigFile = ConfigFile.new()
+	var err := cfg.load("res://core/config.ini") 
+	if err == OK:
+		walk_speed = cfg.get_value("player", "walk_speed", 60.0)
+		sprint_speed = cfg.get_value("player", "sprint_speed", 120.0)
+		hp = cfg.get_value("player", "hp", 4)
+	Events.notify_about_player_hp.emit(hp)
+	
 func _physics_process(_delta):
 	if !is_active: return
 	if Input.is_action_just_pressed("jump"):
@@ -66,13 +71,12 @@ func take_damage(value: int)-> void:
 	sprite.play("hurt")
 	await sprite.animation_finished
 	hp -= value
-	Events.player_take_damage.emit(hp)
-	print("player take damage")
+	Events.notify_about_player_hp.emit(hp)
 	is_active = true
 	if hp <= 0:
 		die()
 	await get_tree().create_timer(0.5).timeout	
-	immunity = false	
+	immunity = false
 
 func die()-> void:
 	is_active = false

@@ -5,13 +5,13 @@ class_name Enemy
 enum States {WALKING, HUNTING, ATTACKING}
 
 var state : States = States.WALKING
-var speed : float = 100
-var visibility_range : float = 150
-var attack_range : float = 10
+var speed : float = 100.0
+var visibility_range : float = 150.0
+var attack_range : float = 10.0
 var attack_damage : int = 1
 
 var player : Player
-var last_player_pos : Vector2i = Vector2i.ZERO
+#var last_player_pos : Vector2i = Vector2i.ZERO
 var astar : AStarGrid2D
 var tilemap : TileMapLayer
 var current_tile_coord : Vector2i = Vector2i.ZERO
@@ -20,23 +20,32 @@ var current_id_path : Array[Vector2i] = []
 @onready var sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var damage_area : Area2D = $Damage_Area
 
-#func _ready() -> void:
-	#current_id_path = [Vector2i(44, 20),Vector2i(43, 20),Vector2i(42, 20),Vector2i(41, 20),Vector2i(40, 20),Vector2i(39, 20),Vector2i(38, 20),
-	#Vector2i(37, 20),Vector2i(36, 20),Vector2i(35, 20),Vector2i(34, 20),Vector2i(33, 20),Vector2i(32, 20),Vector2i(31, 20),Vector2i(30, 20)]
+func _ready() -> void:
+	var cfg : ConfigFile = ConfigFile.new()
+	var err := cfg.load("res://core/config.ini") 
+	if err == OK:
+		speed = cfg.get_value("NPC", "speed", 100.0)
+		visibility_range = cfg.get_value("NPC", "visibility_range", 150.0)
+		attack_range = cfg.get_value("NPC", "attack_range", 10.0)
+		attack_damage = cfg.get_value("NPC", "attack_damage", 1)
 func _process(delta: float) -> void:
 	match state:
 		States.WALKING:
-			move(delta)
 			if _player_in_range(visibility_range):
 				state = States.HUNTING
 				sprite.modulate = Color(1.825, 1.825, 1.825)
 				current_id_path = []
+			_path_move(delta)
+			#if _player_in_range(visibility_range):
+				#state = States.HUNTING
+				#sprite.modulate = Color(1.825, 1.825, 1.825)
+				#current_id_path = []
 		States.HUNTING:
 			hunt(delta)
 		States.ATTACKING:
 			attack()
 
-func move(delta: float)-> void:
+func _path_move(delta: float)-> void:
 	if current_id_path.is_empty() == false:
 		sprite.play("walk")
 		astar.set_point_solid(current_tile_coord, false)
@@ -53,7 +62,15 @@ func move(delta: float)-> void:
 			current_id_path.pop_front()
 	else:
 		sprite.play("idle")	
-			
+
+func _move(delta: float)-> void:
+	sprite.play("walk")
+	var target_position = player.global_position
+	if global_position.x < target_position.x:
+		sprite.flip_h = true
+	elif global_position.x > target_position.x:
+		sprite.flip_h = false
+	global_position = global_position.move_toward(target_position, speed * delta)
 
 func hunt(delta: float)-> void:
 	if !_player_in_range(visibility_range):
@@ -63,9 +80,10 @@ func hunt(delta: float)-> void:
 	if _player_in_range(attack_range):
 		state = States.ATTACKING
 		return
-	if current_id_path.is_empty():
-		current_id_path = _find_path(tilemap.local_to_map(player.global_position))
-	move(delta)
+	#if current_id_path.is_empty():
+		#current_id_path = _find_path(tilemap.local_to_map(player.global_position))
+	#move(delta)
+	_move(delta)
 		
 func attack()-> void:
 	sprite.play("attack")
